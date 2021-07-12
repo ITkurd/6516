@@ -1,0 +1,38 @@
+2014-04-23 Max Drhak
+ * 0.9.8 Release
+ * Fix Bug in parsing Unknown tag types
+ * Changes needed to support updates in IccProfLib 1.6.8
+ * Changed #ifdef WIN32 to #if defined(WIN32) || defined(WIN64)
+ * Added std::string interface to icFixXml
+ * Increased size of lines in icXmlDumpHexData
+ * Added support for "Now" to icGetDateTimeValue parsing
+ * Added icGetChildText for safe extraction of xml child node text
+ 
+2012-08-31 Max Derhak
+ * 0.9.7 Release
+ * Moved CIccUTF16String to SampleICC's IccProfLib
+ * Changes needed to support updates in IccProfLib 1.6.7
+ 
+2010-12-07 Max Derhak
+ * 0.9.6 Release
+ * Fixed bug relative to UTF16 to UTF8 conversion.  Replaced
+   std::wstring in some instances with a new class CIccUTF16String.
+
+2010-11-24 Max Derhak
+ * 0.9.5 Release
+ * Added NewCopy() and construction members to CIccTagXmlText and 
+   CIccTagXmlTextDescription classes to fix bug in outputting device
+   link profiles as XML
+
+2010-11-15 Max Derhak
+ * 0.9.4 Release
+ * Fix buffer overrun bug in CIccTagXmlColorantTable::ToXml()
+
+2010-11-03 Max Derhak
+ * 0.9.3 Release
+ * Modification of Schema and IccXMLLib to support MPE tags
+ * Fix bug with support for 'float' encoding of external table files
+
+2010-07-29 Max Derhak
+ * Initial Release of ICCXML corresponding to 1.6.0 release of SampleICC   
+ 
