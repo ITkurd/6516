@@ -1,0 +1,1607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  RelaxNG Schema for IccLibXml
+  Based on 20081007_13 ISO_15076-1R_(E).pdf
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="IccProfile">
+      <ref name="Header"/>
+      <ref name="Tags"/>
+    </element>
+  </start>
+  <define name="Header">
+    <element name="Header">
+      <optional>
+        <element name="PreferredCMMType">
+          <ref name="Char4"/>
+        </element>
+      </optional>
+      <element name="ProfileVersion">
+        <ref name="Version"/>
+      </element>
+      <element name="ProfileDeviceClass">
+        <ref name="EnumProfileClass"/>
+      </element>
+      <element name="DataColourSpace">
+        <ref name="EnumColourSpace"/>
+      </element>
+      <element name="PCS">
+        <choice>
+          <value>XYZ </value>
+          <value>Lab </value>
+        </choice>
+      </element>
+      <optional>
+        <element name="CreationDateTime">
+          <ref name="dateTimeNumber"/>
+        </element>
+      </optional>
+      <optional>
+        <!-- element Signature { 'acsp' }?, -->
+        <element name="PrimaryPlatform">
+          <ref name="EnumPrimaryPlatform"/>
+        </element>
+      </optional>
+      <element name="ProfileFlags">
+        <group>
+          <attribute name="EmbeddedInFile">
+            <choice>
+              <value>true</value>
+              <value>false</value>
+            </choice>
+          </attribute>
+          <attribute name="UseWithEmbeddedDataOnly">
+            <choice>
+              <value>true</value>
+              <value>false</value>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="VendorFlags">
+              <ref name="Hex4Byte"/>
+            </attribute>
+          </optional>
+        </group>
+        <!-- string composed of 1's and 0's with length 14 -->
+      </element>
+      <optional>
+        <element name="DeviceManufacturer">
+          <ref name="Char4"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="DeviceModel">
+          <ref name="Char4"/>
+        </element>
+      </optional>
+      <element name="DeviceAttributes">
+        <ref name="DevAttr"/>
+      </element>
+      <element name="RenderingIntent">
+        <choice>
+          <value>Perceptual</value>
+          <value>Relative Colorimetric</value>
+          <value>Saturation</value>
+          <value>Absolute Colorimetric</value>
+        </choice>
+      </element>
+      <element name="PCSIlluminant">
+        <element name="XYZNumber">
+          <ref name="XYZNumber"/>
+        </element>
+      </element>
+      <optional>
+        <element name="ProfileCreator">
+          <ref name="Char4"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="ProfileID">
+          <ref name="Hex16Byte"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="Reserved">
+          <ref name="Hex16Byte"/>
+        </element>
+      </optional>
+    </element>
+  </define>
+  <define name="Tags">
+    <element name="Tags">
+      <interleave>
+        <zeroOrMore>
+          <!-- crdInfoType *&  -->
+          <ref name="chromaticityType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="colorantOrderType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="colorantTableType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="curveType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="dataType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="dateTimeType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="dictType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <!-- deviceSettingsType *& -->
+          <ref name="lut16Type"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="lut8Type"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="lutAToBType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="lutBToAType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="measurementType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="multiLocalizedUnicodeType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="multiProcessElementType"/>
+        </zeroOrMore>
+        <optional>
+          <!-- namedColorType *& -->
+          <ref name="namedColor2Type"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="parametricCurveType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="profileSequenceDescType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="responseCurveSet16Type"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="s15Fixed16ArrayType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <!-- screeningType *& -->
+          <ref name="signatureType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="textDescriptionType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="textType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="u16Fixed16ArrayType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <!-- ucrbgType *& -->
+          <ref name="uInt32ArrayType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="uInt64ArrayType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="uInt8ArrayType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="viewingConditionsType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="xyzType"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="unknownData"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="chromaticityType">
+    <element name="chromaticityType">
+      <oneOrMore>
+        <!-- element TagSignature { 'chrm' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <!-- element NumberOfDeviceChannels { uInt16Number }?, -->
+      <element name="Colorant">
+        <choice>
+          <value>Unknown</value>
+          <value>ITU-R BT.709</value>
+          <value>SMPTE RP145-1994</value>
+          <value>EBU Tech.3213-E</value>
+          <value>P22</value>
+          <value>Customized Encoding</value>
+        </choice>
+      </element>
+      <oneOrMore>
+        <element name="Channel">
+          <attribute name="x">
+            <data type="float"/>
+          </attribute>
+          <attribute name="y">
+            <data type="float"/>
+          </attribute>
+          <empty/>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="colorantOrderType">
+    <element name="colorantOrderType">
+      <oneOrMore>
+        <!-- element TagSignature { 'clro' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="ColorantOrder">
+        <oneOrMore>
+          <!--   attribute CountOfColorants { uInt32Number }?, -->
+          <element name="n">
+            <ref name="uInt8Number"/>
+          </element>
+        </oneOrMore>
+        <!--
+          made design decision to not change current format of CIccTagXmlColorantOrder
+          This is because CIccTagXmlColorantOrder::ParseXml uses CIccUInt8Array::ParseArray
+          not safe to change CIccUInt8Array::ParseArray because there are a lot of functions which uses it                                   
+        -->
+      </element>
+    </element>
+  </define>
+  <define name="colorantTableType">
+    <element name="colorantTableType">
+      <oneOrMore>
+        <!-- element TagSignature { 'clrt' | 'clot' }+, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="ColorantTable">
+        <oneOrMore>
+          <!-- attribute CountOfColorants { uInt32Number }?, -->
+          <element name="Colorant">
+            <attribute name="Name"/>
+            <attribute name="Channel1">
+              <data type="float"/>
+            </attribute>
+            <attribute name="Channel2">
+              <data type="float"/>
+            </attribute>
+            <attribute name="Channel3">
+              <data type="float"/>
+            </attribute>
+          </element>
+        </oneOrMore>
+      </element>
+    </element>
+  </define>
+  <define name="curveType">
+    <element name="curveType">
+      <ref name="Curve"/>
+    </element>
+  </define>
+  <!-- how to restrict so that the element should not be empty? -->
+  <define name="dataType">
+    <element name="dataType">
+      <oneOrMore>
+        <!-- element TagSignature { Char4 }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="Data">
+        <attribute name="Flag">
+          <choice>
+            <value>ASCII</value>
+            <value>binary</value>
+          </choice>
+        </attribute>
+        <data type="string"/>
+      </element>
+    </element>
+  </define>
+  <define name="dateTimeType">
+    <element name="dateTimeType">
+      <oneOrMore>
+        <!-- element TagSignature { 'calt' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="DateTime">
+        <ref name="dateTimeNumber"/>
+      </element>
+    </element>
+  </define>
+  <define name="dictType">
+    <element name="dictType">
+      <oneOrMore>
+        <!-- element TagSignature { 'calt' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <oneOrMore>
+	    <element name="DictEntry">
+		  <attribute name="Name">
+		    <ref name="Text"/>
+	      </attribute>
+		  <optional>
+		    <attribute name="Value">
+		      <choice>
+		        <ref name="Text"/>
+			    <value/>
+			  </choice>
+	        </attribute>
+		  </optional>
+		  <zeroOrMore>
+            <element name="LocalizedName">
+              <attribute name="LanguageCountry">
+                <choice>
+                  <ref name="Char4"/>
+                  <value/>
+                </choice>
+              </attribute>
+              <ref name="Text"/>
+            </element>
+		  </zeroOrMore>
+		  <zeroOrMore>
+            <element name="LocalizedValue">
+              <attribute name="LanguageCountry">
+                <choice>
+                  <ref name="Char4"/>
+                  <value/>
+                </choice>
+              </attribute>
+              <ref name="Text"/>
+            </element>
+		  </zeroOrMore>
+		</element>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="lut8Type">
+    <element name="lut8Type">
+      <ref name="Lut8or16Type"/>
+    </element>
+  </define>
+  <define name="lut16Type">
+    <element name="lut16Type">
+      <ref name="Lut8or16Type"/>
+    </element>
+  </define>
+  <define name="lutAToBType">
+    <element name="lutAtoBType">
+      <oneOrMore>
+        <!-- element TagSignature { 'A2B0' | 'A2B1' |  'A2B2' }+, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="Channels">
+        <attribute name="InputChannels">
+          <ref name="uInt8Number"/>
+        </attribute>
+        <attribute name="OutputChannels">
+          <ref name="uInt8Number"/>
+        </attribute>
+        <empty/>
+      </element>
+      <choice>
+        <!-- BCurve only -->
+        <element name="BCurve">
+          <ref name="CurveOrParametricChoice"/>
+        </element>
+        <!-- MCurve - Matrix - BCurve -->
+        <group>
+          <element name="MCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="Matrix">
+            <ref name="A2BMatrix"/>
+          </element>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+        <!-- ACurve - CLUT - BCurve -->
+        <group>
+          <element name="ACurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="CLUT">
+            <ref name="A2BClutTable"/>
+          </element>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+        <!-- ACurve - CLUT - MCurve - Matrix - BCurve -->
+        <group>
+          <element name="ACurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="CLUT">
+            <ref name="A2BClutTable"/>
+          </element>
+          <element name="MCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="Matrix">
+            <ref name="A2BMatrix"/>
+          </element>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="lutBToAType">
+    <element name="lutBtoAType">
+      <oneOrMore>
+        <!-- element TagSignature { 'B2A0' | 'B2A1' |  'B2A2' }+, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="Channels">
+        <attribute name="InputChannels">
+          <ref name="uInt8Number"/>
+        </attribute>
+        <attribute name="OutputChannels">
+          <ref name="uInt8Number"/>
+        </attribute>
+        <empty/>
+      </element>
+      <choice>
+        <!-- BCurve only -->
+        <element name="BCurve">
+          <ref name="CurveOrParametricChoice"/>
+        </element>
+        <!-- BCurve - Matrix - MCurve -->
+        <group>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="Matrix">
+            <ref name="A2BMatrix"/>
+          </element>
+          <element name="MCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+        <!-- BCurve - CLUT - ACurve -->
+        <group>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="CLUT">
+            <ref name="A2BClutTable"/>
+          </element>
+          <element name="ACurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+        <!-- BCurve - Matrix - MCurve -  CLUT - ACurve -->
+        <group>
+          <element name="BCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="Matrix">
+            <ref name="A2BMatrix"/>
+          </element>
+          <element name="MCurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+          <element name="CLUT">
+            <ref name="A2BClutTable"/>
+          </element>
+          <element name="ACurves">
+            <ref name="CurveOrParametricChoice"/>
+          </element>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="measurementType">
+    <element name="measurementType">
+      <oneOrMore>
+        <!-- element TagSignature { 'meas' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="StandardObserver">
+        <choice>
+          <value>Unknown Observer</value>
+          <value>CIE 1931 standard colorimetric observer</value>
+          <value>CIE 1964 standard colorimetric observer</value>
+        </choice>
+      </element>
+      <element name="MeasurementBacking">
+        <ref name="XYZNumber"/>
+      </element>
+      <element name="Geometry">
+        <choice>
+          <value>Geometry Unknown</value>
+          <value>Geometry 0-45 or 45-0</value>
+          <value>Geometry 0-d or d-0</value>
+          <value>Max Geometry</value>
+        </choice>
+      </element>
+      <element name="Flare">
+        <choice>
+          <value>Flare 0</value>
+          <value>Flare 100</value>
+          <value>Max Flare</value>
+        </choice>
+      </element>
+      <element name="StandardIlluminant">
+        <ref name="Illuminant"/>
+      </element>
+    </element>
+  </define>
+  <define name="multiLocalizedUnicodeType">
+    <element name="multiLocalizedUnicodeType">
+      <oneOrMore>
+        <!-- element TagSignature { 'cprt' | 'dmnd' | 'dmdd' | 'desc' | 'vued' }+, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <oneOrMore>
+        <!-- element NumberOfRecords { uInt32Number }?, -->
+        <element name="LocalizedText">
+          <attribute name="LanguageCountry">
+            <choice>
+              <ref name="Char4"/>
+              <value/>
+            </choice>
+          </attribute>
+          <ref name="TextOrFile"/>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="multiProcessElementType">
+    <element name="multiProcessElementType">
+      <oneOrMore>
+        <ref name="TagSignature"/>
+      </oneOrMore>
+	  <element "MultiProcessingElements">
+	    <attribute name="InputChannels">
+          <ref name="uInt8Number"/>
+		</attribute>
+	    <attribute name="OutputChannels">
+          <ref name="uInt8Number"/>
+		</attribute>
+        <oneOrMore>
+	      <choice>
+		    <ref name="UnknownElement"/>
+		    <ref name="CurveSetElement"/>
+		    <ref name="MatrixElement"/>
+		    <ref name="CLutElement"/>
+		    <ref name="BAcsElement"/>
+		    <ref name="EAcsElement"/>
+		  </choice>
+        </oneOrMore>
+	  </element>
+    </element>
+  </define>
+  <define name="UnknownElement">
+    <element name="UnknownElement">
+	  <attribute name="InputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+      <text/>
+	</element>
+  </define>
+  <define name="CurveSetElement">
+    <element name="CurveSetElement">
+	  <attribute name="InputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <oneOrMore>
+	    <element name="SegmentedCurve">
+		  <choice>
+		    <ref name="SingleSegment"/>
+			<ref name="MultiSegment"/>
+		  </choice>
+		</element>  
+	  </oneOrMore>
+	</element>
+  </define>
+  <define name="SingleSegment">
+    <element name="FormulaStartSegment">
+	  <attribute name="Start">
+        <value>-infinity</value>
+	  </attribute>
+	  <attribute name="End">
+        <value>+infinity</value>
+	  </attribute>
+	  <attribute name="FunctionType">
+	    <ref name="uInt16Number"/>
+	  </attribute>
+	  <zeroOrMore>
+	    <attribute name="Reserved2">
+	      <ref name="uInt16Number"/>
+	    </attribute>
+	  </zeroOrMore>
+	  <text/>
+	</element>
+  </define>
+  <define name="MultiSegment">
+    <ref name="FormulaStartSegment"/>
+    <zeroOrMore>
+	  <choice>
+	    <ref name="FormulaSegment"/>
+	    <ref name="SampledSegment"/>
+	  </choice>
+    </zeroOrMore>
+    <ref name="FormulaEndSegment"/>
+  </define>
+  <define name="FormulaStartSegment">
+    <element name="FormulaStartSegment">
+	  <attribute name="Start">
+        <value>-infinity</value>
+	  </attribute>
+	  <attribute name="End">
+        <data type="float"/>
+	  </attribute>
+	  <attribute name="FunctionType">
+	    <ref name="uInt16Number"/>
+	  </attribute>
+	  <zeroOrMore>
+	    <attribute name="Reserved2">
+	      <ref name="uInt16Number"/>
+	    </attribute>
+	  </zeroOrMore>
+	  <text/>
+	</element>
+  </define>
+  <define name="FormulaEndSegment">
+    <element name="FormulaEndSegment">
+	  <attribute name="Start">
+        <data type="float"/>
+	  </attribute>
+	  <attribute name="End">
+        <value>+infinity</value>
+	  </attribute>
+	  <attribute name="FunctionType">
+	    <ref name="uInt16Number"/>
+	  </attribute>
+	  <zeroOrMore>
+	    <attribute name="Reserved2">
+	      <ref name="uInt16Number"/>
+	    </attribute>
+	  </zeroOrMore>
+	  <text/>
+	</element>
+  </define>
+  <define name="FormulaSegment">
+    <element name="FormulaSegment">
+	  <attribute name="Start">
+        <data type="float"/>
+	  </attribute>
+	  <attribute name="End">
+        <data type="float"/>
+	  </attribute>
+	  <attribute name="FunctionType">
+	    <ref name="uInt16Number"/>
+	  </attribute>
+	  <zeroOrMore>
+	    <attribute name="Reserved2">
+	      <ref name="uInt16Number"/>
+	    </attribute>
+	  </zeroOrMore>
+	  <text/>
+	</element>
+  </define>
+  <define name="SampledSegment">
+    <element name="SampledSegment">
+	  <attribute name="Start">
+        <data type="float"/>
+	  </attribute>
+	  <attribute name="End">
+        <data type="float"/>
+	  </attribute>
+	  <text/>
+	</element>
+  </define>
+  <define name="MatrixElement">
+    <element name="MatrixElement">
+	  <attribute name="InputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <element name="MatrixData">
+	    <text/>
+	  </element>
+      <optional>
+	    <element name="ConstantData">
+		  <text/>
+		</element>
+      </optional>	  
+	</element>
+  </define>
+  <define name="CLutElement">
+    <element name="CLutElement">
+	  <attribute name="InputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <choice>
+        <attribute name="GridGranularity">
+          <data type="byte"/>
+        </attribute>
+        <element name="GridPoints">
+          <data type="string"/>
+        </element>
+      </choice>
+      <element name="TableData">
+        <ref name="Table"/>
+      </element>
+	</element>
+  </define>
+  <define name="BAcsElement">
+    <element name="BAcsElement">
+	  <attribute name="InputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels">
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="Signature">
+        <choice>
+          <ref name="Char4"/>
+          <ref name="Hex8Byte"/>
+        </choice>
+      </attribute>
+	</element>
+  </define>
+  <define name="EAcsElement">
+    <element name="EAcsElement">
+	  <attribute name="InputChannels"><value/>
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="OutputChannels"><value/>
+        <ref name="uInt16Number"/>
+	  </attribute>
+	  <attribute name="Signature">
+        <choice>
+          <ref name="Char4"/>
+          <ref name="Hex8Byte"/>
+        </choice>
+      </attribute>
+	</element>
+  </define>
+  <!--
+    not sure if this is the correct way to represent this type
+    'name' is an attribute and 'deviceCoords' is the main content 
+  -->
+  <define name="namedColor2Type">
+    <element name="namedColor2Type">
+      <oneOrMore>
+        <!-- element TagSignature { 'ncl2' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="NamedColors">
+        <attribute name="VendorFlag">
+          <ref name="uInt32Number"/>
+        </attribute>
+        <!-- is this correct datatype? -->
+        <attribute name="CountOfDeviceCoords">
+          <ref name="uInt32Number"/>
+        </attribute>
+        <attribute name="DeviceEncoding">
+          <choice>
+            <value>int16</value>
+            <value>int8</value>
+            <value>float</value>
+          </choice>
+        </attribute>
+        <attribute name="Prefix"/>
+        <attribute name="Suffix"/>
+        <oneOrMore>
+          <element name="NamedColor">
+            <choice>
+              <group>
+                <attribute name="Name"/>
+                <attribute name="X">
+                  <data type="float">
+                    <param name="minInclusive">0.0</param>
+                  </data>
+                </attribute>
+                <attribute name="Y">
+                  <data type="float"/>
+                </attribute>
+                <attribute name="Z">
+                  <data type="float"/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="Name"/>
+                <attribute name="L">
+                  <data type="float">
+                    <param name="minInclusive">0.0</param>
+                  </data>
+                </attribute>
+                <attribute name="a">
+                  <data type="float"/>
+                </attribute>
+                <attribute name="b">
+                  <data type="float"/>
+                </attribute>
+              </group>
+            </choice>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </element>
+  </define>
+  <define name="parametricCurveType">
+    <element name="parametricCurveType">
+      <group>
+        <oneOrMore>
+          <!--
+            element Curve{ 
+            DataFormat?,
+          -->
+          <ref name="TagSignature"/>
+        </oneOrMore>
+        <element name="ParametricCurve">
+          <attribute name="FunctionType">
+            <choice>
+              <value>0</value>
+              <value>1</value>
+              <value>2</value>
+              <value>3</value>
+              <value>4</value>
+            </choice>
+          </attribute>
+          <!-- what is better way to represent this? -->
+          <list>
+            <oneOrMore>
+              <data type="float"/>
+            </oneOrMore>
+          </list>
+        </element>
+      </group>
+      <!-- } -->
+    </element>
+  </define>
+  <define name="profileSequenceDescType">
+    <element name="profileSequenceDescType">
+      <oneOrMore>
+        <!-- element TagSignature { 'pseq' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="ProfileSequence">
+        <oneOrMore>
+          <!-- attribute CountOfDescStructs { uInt32Number }?, -->
+          <element name="ProfileDesc">
+            <element name="DeviceManufacturerSignature">
+              <ref name="Char4"/>
+            </element>
+            <element name="DeviceModelSignature">
+              <ref name="Char4"/>
+            </element>
+            <element name="DeviceAttributes">
+              <ref name="DevAttr"/>
+            </element>
+            <optional>
+              <element name="Technology">
+                <ref name="TechnologySignatures"/>
+              </element>
+            </optional>
+            <choice>
+              <!-- version 2 profiles have textDescriptionType -->
+              <group>
+                <optional>
+                  <element name="DeviceManufacturer">
+                    <ref name="textDescriptionType"/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="DeviceModel">
+                    <ref name="textDescriptionType"/>
+                  </element>
+                </optional>
+              </group>
+              <!-- version 2 profiles have multiLocalizedUnicodeType -->
+              <group>
+                <optional>
+                  <element name="DeviceManufacturer">
+                    <ref name="multiLocalizedUnicodeType"/>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="DeviceModel">
+                    <ref name="multiLocalizedUnicodeType"/>
+                  </element>
+                </optional>
+              </group>
+            </choice>
+          </element>
+        </oneOrMore>
+      </element>
+    </element>
+  </define>
+  <define name="responseCurveSet16Type">
+    <element name="responseCurveSet16Type">
+      <oneOrMore>
+        <!-- element TagSignature { 'resp' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="CountOfChannels">
+        <data type="unsignedShort"/>
+      </element>
+      <oneOrMore>
+        <!--  element CountOfMeasTypes { xsd:unsignedShort }, -->
+        <element name="ResponseCurve">
+          <ref name="ResponseCurve"/>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="s15Fixed16ArrayType">
+    <element name="s15Fixed16ArrayType">
+      <!-- element TagSignature { 'chad' }, -->
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="signatureType">
+    <element name="signatureType">
+      <oneOrMore>
+        <!-- element TagSignature { 'tech' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="Signature">
+        <ref name="Char4"/>
+      </element>
+    </element>
+  </define>
+  <define name="textDescriptionType">
+    <element name="textDescriptionType">
+      <oneOrMore>
+        <!-- element TagSignature { 'dmnd' | 'dmdd' | 'desc' | 'scrd' | 'vued' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <group>
+        <element name="ASCII">
+          <!-- attribute Length { uInt32Number }?,         -->
+          <ref name="TextOrFile"/>
+        </element>
+        <optional>
+          <element name="Unicode">
+            <optional>
+              <attribute name="LanguageCode">
+                <ref name="Hex4Byte"/>
+              </attribute>
+            </optional>
+            <!-- attribute Length { uInt32Number }?,  -->
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="MacScript">
+            <optional>
+              <attribute name="ScriptCode">
+                <ref name="Hex2Byte"/>
+              </attribute>
+            </optional>
+            <text/>
+          </element>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="textType">
+    <element name="textType">
+      <oneOrMore>
+        <!-- element TagSignature { 'targ' | 'cprt' | Char4 }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <choice>
+        <element name="TextData">
+          <data type="string"/>
+        </element>
+        <element name="ASCII">
+          <ref name="TextOrFile"/>
+        </element>
+      </choice>
+    </element>
+  </define>
+  <define name="u16Fixed16ArrayType">
+    <element name="u16Fixed16ArrayType">
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="uInt16ArrayType">
+    <element name="uInt16ArrayType">
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="uInt32ArrayType">
+    <element name="uInt32ArrayType">
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="uInt64ArrayType">
+    <element name="uInt64ArrayType">
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="uInt8ArrayType">
+    <element name="uInt8ArrayType">
+      <ref name="NumericArrayType"/>
+    </element>
+  </define>
+  <define name="viewingConditionsType">
+    <element name="viewingConditionsType">
+      <oneOrMore>
+        <!-- element TagSignature { 'view' }, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="IlluminantXYZ">
+        <ref name="XYZNumber"/>
+      </element>
+      <element name="SurroundXYZ">
+        <ref name="XYZNumber"/>
+      </element>
+      <element name="IllumType">
+        <ref name="Illuminant"/>
+      </element>
+    </element>
+  </define>
+  <define name="xyzType">
+    <element name="XYZType">
+      <oneOrMore>
+        <!-- element TagSignature { 'bXYZ' | 'gXYZ' | 'lumi' | 'bkpt' | 'wtpt' | 'rXYZ'}, -->
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <zeroOrMore>
+        <element name="XYZNumber">
+          <ref name="XYZNumber"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!-- unknown tags -->
+  <define name="unknownData">
+    <element name="PrivateType">
+      <attribute name="type"/>
+      <oneOrMore>
+        <ref name="TagSignature"/>
+      </oneOrMore>
+      <element name="UnknownData">
+        <text/>
+      </element>
+    </element>
+  </define>
+  <!-- Special Data Types -->
+  <define name="TagSignature">
+    <element name="TagSignature">
+      <choice>
+        <ref name="Char4"/>
+        <ref name="Hex8Byte"/>
+      </choice>
+    </element>
+  </define>
+  <define name="Curve">
+    <oneOrMore>
+      <!-- element TagSignature { 'bTRC' | 'rTRC' | 'gTRC' | 'kTRC' }+ -->
+      <ref name="TagSignature"/>
+    </oneOrMore>
+    <!-- element CountOfEntries { uInt32Number }?, -->
+    <element name="Curve">
+      <ref name="Table"/>
+    </element>
+  </define>
+  <!-- Contents of a curve is a table -->
+  <define name="Table">
+    <choice>
+      <!-- table can contain a list of float.. -->
+      <group>
+        <!-- DataFormat?, -->
+        <list>
+          <oneOrMore>
+            <data type="float"/>
+          </oneOrMore>
+        </list>
+      </group>
+      <!-- OR reference to a text file.. -->
+      <group>
+        <attribute name="File">
+          <data type="string"/>
+        </attribute>
+        <attribute name="Format">
+          <value>text</value>
+        </attribute>
+		<optional>
+			<attribute name="FileEncoding">
+				<choice>
+					<value>int8</value>
+					<value>int16</value>
+					<value>float</value>
+				</choice>
+			</attribute>
+		</optional>
+        <!-- DataFormat?, -->
+        <empty/>
+      </group>
+      <!-- OR reference to a binary file -->
+      <group>
+        <attribute name="File">
+          <data type="string"/>
+        </attribute>
+        <attribute name="Format">
+          <value>binary</value>
+        </attribute>
+        <!-- DataFormat?, -->
+        <attribute name="Endian">
+          <choice>
+            <value>big</value>
+            <value>little</value>
+          </choice>
+        </attribute>
+        <empty/>
+      </group>
+      <empty/>
+    </choice>
+  </define>
+  <!-- Contents of a text tag can be text or file -->
+  <define name="TextOrFile">
+    <choice>
+      <text/>
+      <group>
+        <attribute name="File">
+          <data type="string"/>
+        </attribute>
+        <empty/>
+      </group>
+    </choice>
+  </define>
+  <define name="EnumProfileClass">
+    <choice>
+      <value>scnr</value>
+      <value>mntr</value>
+      <value>prtr</value>
+      <value>link</value>
+      <value>spac</value>
+      <value>abst</value>
+      <value>nmcl</value>
+    </choice>
+  </define>
+  <define name="EnumColourSpace">
+    <choice>
+      <value>XYZ </value>
+      <value>Lab </value>
+      <value>Luv </value>
+      <value>YCbr</value>
+      <value>Yxy </value>
+      <value>RGB </value>
+      <value>GRAY</value>
+      <value>HSV </value>
+      <value>HLS </value>
+      <value>CMYK</value>
+      <value>CMY </value>
+      <value>2CLR</value>
+      <value>3CLR</value>
+      <value>4CLR</value>
+      <value>5CLR</value>
+    </choice>
+  </define>
+  <define name="EnumPrimaryPlatform">
+    <choice>
+      <value>NULL</value>
+      <value>APPL</value>
+      <value>MSFT</value>
+      <value>SGI </value>
+      <value>SUNW</value>
+    </choice>
+  </define>
+  <define name="DevAttr">
+    <attribute name="ReflectiveOrTransparency">
+      <choice>
+        <value>reflective</value>
+        <value>transparency</value>
+      </choice>
+    </attribute>
+    <attribute name="GlossyOrMatte">
+      <choice>
+        <value>glossy</value>
+        <value>matte</value>
+      </choice>
+    </attribute>
+    <attribute name="MediaPolarity">
+      <choice>
+        <value>positive</value>
+        <value>negative</value>
+      </choice>
+    </attribute>
+    <attribute name="MediaColour">
+      <choice>
+        <value>colour</value>
+        <value>blackAndwhite</value>
+      </choice>
+    </attribute>
+    <optional>
+      <attribute name="VendorSpecific">
+         <ref name="Hex8Byte"/>
+      </attribute>
+    </optional>
+  </define>
+  <define name="Lut8or16Type">
+    <oneOrMore>
+      <ref name="TagSignature"/>
+    </oneOrMore>
+    <element name="Channels">
+      <attribute name="InputChannels">
+        <ref name="uInt8Number"/>
+      </attribute>
+      <attribute name="OutputChannels">
+        <ref name="uInt8Number"/>
+      </attribute>
+      <empty/>
+    </element>
+    <optional>
+      <element name="Matrix">
+        <ref name="Matrix"/>
+      </element>
+    </optional>
+    <choice>
+      <element name="ACurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="BCurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="MCurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+    </choice>
+    <element name="CLUT">
+      <ref name="ClutTable"/>
+    </element>
+    <choice>
+      <element name="ACurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="BCurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="MCurves">
+        <oneOrMore>
+          <element name="Curve">
+            <ref name="Table"/>
+          </element>
+        </oneOrMore>
+      </element>
+    </choice>
+  </define>
+  <define name="ClutTable">
+    <choice>
+      <attribute name="GridGranularity">
+        <data type="byte"/>
+      </attribute>
+      <element name="GridPoints">
+        <data type="string"/>
+      </element>
+    </choice>
+    <element name="TableData">
+      <ref name="Table"/>
+    </element>
+  </define>
+  <define name="Matrix">
+    <attribute name="e1">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e2">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e3">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e4">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e5">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e6">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e7">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e8">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e9">
+      <data type="float"/>
+    </attribute>
+  </define>
+  <define name="A2BClutTable">
+    <optional>
+      <attribute name="Precision">
+        <choice>
+          <value>01h</value>
+          <value>02h</value>
+        </choice>
+      </attribute>
+    </optional>
+    <ref name="ClutTable"/>
+  </define>
+  <define name="A2BMatrix">
+    <attribute name="e1">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e2">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e3">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e4">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e5">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e6">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e7">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e8">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e9">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e10">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e11">
+      <data type="float"/>
+    </attribute>
+    <attribute name="e12">
+      <data type="float"/>
+    </attribute>
+  </define>
+  <define name="CurveOrParametricChoice">
+    <choice>
+      <oneOrMore>
+        <element name="Curve">
+          <ref name="Table"/>
+        </element>
+      </oneOrMore>
+      <oneOrMore>
+        <element name="ParametricCurve">
+          <optional>
+            <ref name="DataFormat"/>
+          </optional>
+          <attribute name="FunctionType">
+            <choice>
+              <value>0</value>
+              <value>1</value>
+              <value>2</value>
+              <value>3</value>
+              <value>4</value>
+            </choice>
+          </attribute>
+          <!-- attribute CountOfEntries { uInt32Number }?, -->
+          <list>
+            <oneOrMore>
+              <data type="float"/>
+            </oneOrMore>
+          </list>
+        </element>
+      </oneOrMore>
+    </choice>
+  </define>
+  <define name="TechnologySignatures">
+    <choice>
+      <value>fscn</value>
+      <value>dcam</value>
+      <value>rscn</value>
+      <value>ijet</value>
+      <value>twax</value>
+      <value>epho</value>
+      <value>esta</value>
+      <value>dsub</value>
+      <value>rpho</value>
+      <value>fprn</value>
+      <value>vidm</value>
+      <value>vidc</value>
+      <value>pjtv</value>
+      <value>CRT</value>
+      <value>PMD</value>
+      <value>AMD</value>
+      <value>KPCD</value>
+      <value>imgs</value>
+      <value>grav</value>
+      <value>offs</value>
+      <value>silk</value>
+      <value>flex</value>
+    </choice>
+  </define>
+  <define name="Illuminant">
+    <choice>
+      <value>Illuminant Unknown</value>
+      <value>Illuminant D50</value>
+      <value>Illuminant D65</value>
+      <value>Illuminant D93</value>
+      <value>Illuminant F2</value>
+      <value>Illuminant D55</value>
+      <value>Illuminant A</value>
+      <value>Illuminant EquiPowerE</value>
+      <value>Illuminant F8</value>
+    </choice>
+  </define>
+  <define name="ResponseCurve">
+    <attribute name="MeasUnitSignature">
+      <choice>
+        <value>Status A</value>
+        <value>Status E</value>
+        <value>Status I</value>
+        <value>Status T</value>
+        <value>Status M</value>
+        <value>DIN with no polarizing filter</value>
+        <value>DIN with polarizing filter</value>
+        <value>Narrow band DIN with no polarizing filter</value>
+        <value>Narrow band DIN with polarizing filter</value>
+      </choice>
+    </attribute>
+    <oneOrMore>
+      <element name="ChannelResponses">
+        <!--  element NumberOfMeas { uInt32Number }, -->
+        <ref name="XYZNumber"/>
+        <oneOrMore>
+          <element name="Measurement">
+            <attribute name="DeviceCode">
+              <data type="float"/>
+            </attribute>
+            <attribute name="MeasValue">
+              <data type="float"/>
+            </attribute>
+            <optional>
+              <attribute name="Reserved">
+                <ref name="uInt16Number"/>
+              </attribute>
+            </optional>
+          </element>
+        </oneOrMore>
+      </element>
+    </oneOrMore>
+  </define>
+  <define name="DataFormat">
+    <attribute name="DataFormat">
+      <choice>
+        <value>dec</value>
+        <value>hex</value>
+        <value>float</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="NumericArrayType">
+    <oneOrMore>
+      <ref name="TagSignature"/>
+    </oneOrMore>
+    <element name="Array">
+      <list>
+        <oneOrMore>
+          <data type="float"/>
+        </oneOrMore>
+      </list>
+    </element>
+  </define>
+  <!-- Datatype patterns -->
+  <define name="Char4">
+    <data type="string">
+      <param name="length">4</param>
+    </data>
+  </define>
+  <define name="Version">
+    <data type="string">
+      <param name="pattern">\d\.\d\d</param>
+    </data>
+  </define>
+  <define name="Hex2Byte">
+    <data type="hexBinary">
+      <param name="length">2</param>
+    </data>
+  </define>
+  <define name="Hex4Byte">
+    <data type="hexBinary">
+      <param name="length">4</param>
+    </data>
+  </define>
+  <define name="Hex8Byte">
+    <data type="hexBinary">
+      <param name="length">8</param>
+    </data>
+  </define>
+  <define name="Hex16Byte">
+    <data type="hexBinary">
+      <param name="length">16</param>
+    </data>
+  </define>
+  <!-- Basic Datatypes ( Section 4.1 of ICC Profile Specs) -->
+  <define name="dateTimeNumber">
+    <data type="dateTime"/>
+  </define>
+  <define name="response16Number">
+    <element name="DeviceCode">
+      <ref name="uInt16Number"/>
+    </element>
+    <!-- element Reserved { uInt16Number }, -->
+    <element name="MeasValue">
+      <ref name="s15Fixed16Number"/>
+    </element>
+  </define>
+  <define name="s15Fixed16Number">
+    <data type="long"/>
+  </define>
+  <define name="u16Fixed16Number">
+    <data type="unsignedLong"/>
+  </define>
+  <define name="u1Fixed15Number">
+    <data type="unsignedShort"/>
+  </define>
+  <define name="u8Fixed8Number">
+    <data type="unsignedShort"/>
+  </define>
+  <define name="uInt16Number">
+    <data type="unsignedShort"/>
+  </define>
+  <define name="uInt32Number">
+    <data type="unsignedLong"/>
+  </define>
+  <define name="uInt64Number">
+    <data type="unsignedInt"/>
+  </define>
+  <define name="uInt8Number">
+    <data type="byte"/>
+  </define>
+  <define name="XYZNumber">
+    <attribute name="X">
+      <data type="float">
+        <param name="minInclusive">0.0</param>
+      </data>
+    </attribute>
+    <attribute name="Y">
+      <data type="float"/>
+    </attribute>
+    <attribute name="Z">
+      <data type="float"/>
+    </attribute>
+  </define>
+</grammar>

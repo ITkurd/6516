@@ -1,0 +1,676 @@
+# RelaxNG Schema for IccLibXml
+# Based on 20081007_13 ISO_15076-1R_(E).pdf
+
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = element IccProfile { Header, Tags }
+
+Header = element Header {
+    element PreferredCMMType { Char4 }?,
+    element ProfileVersion { Version },
+    element ProfileDeviceClass { EnumProfileClass },
+    element DataColourSpace { EnumColourSpace },
+    element PCS { 'XYZ ' | 'Lab '},
+    element CreationDateTime { dateTimeNumber }?,
+    # element Signature { 'acsp' }?,
+    element PrimaryPlatform { EnumPrimaryPlatform }?,    
+    element ProfileFlags { 
+        attribute EmbeddedInFile { 'true' | 'false' },
+        attribute UseWithEmbeddedDataOnly { 'true' | 'false' },
+        attribute VendorFlags  { Hex4Byte }?
+    },
+    element DeviceManufacturer { Char4 }?,
+    element DeviceModel { Char4 }?,
+    element DeviceAttributes { DevAttr },
+    element RenderingIntent { 'Perceptual' | 'Relative Colorimetric' | 'Saturation' | 'Absolute Colorimetric' },
+    element PCSIlluminant { element XYZNumber { XYZNumber } },
+    element ProfileCreator { Char4 }?,
+    element ProfileID { Hex16Byte }?,
+    element Reserved { Hex16Byte }?    
+}
+
+Tags = element Tags {    
+    # crdInfoType *&  
+    chromaticityType *&    
+    colorantOrderType *&
+    colorantTableType *&
+    curveType *&
+    dataType *&
+    dateTimeType *&
+	dictType *&
+    # deviceSettingsType *&
+    lut16Type *&
+    lut8Type *&
+    lutAToBType *&
+    lutBToAType *&
+    measurementType *&
+    multiLocalizedUnicodeType *&
+	multiProcessingElementsType *&
+    # namedColorType *& 
+    namedColor2Type ?& 
+    parametricCurveType *&
+    profileSequenceDescType *&
+    responseCurveSet16Type *&
+    s15Fixed16ArrayType *&
+    # screeningType *&
+    signatureType *&
+    textDescriptionType *&
+    textType *&
+    u16Fixed16ArrayType *&
+    # ucrbgType *& 
+    uInt32ArrayType *&
+    uInt64ArrayType *&
+    uInt8ArrayType *&
+    viewingConditionsType *&
+    xyzType *&
+    unknownData *
+}
+
+chromaticityType = element chromaticityType {
+    # element TagSignature { 'chrm' },
+    TagSignature+,
+    # element NumberOfDeviceChannels { uInt16Number }?,
+    element Colorant { 'Unknown' | 'ITU-R BT.709' | 'SMPTE RP145-1994' | 
+           'EBU Tech.3213-E' | 'P22' | 'Customized Encoding' },
+    element Channel {
+         attribute x { xsd:float },
+         attribute y { xsd:float },
+         empty
+    }+
+    
+}
+
+colorantOrderType = element colorantOrderType {
+    # element TagSignature { 'clro' },
+    TagSignature+,
+    element ColorantOrder { 
+    #   attribute CountOfColorants { uInt32Number }?,
+        element n { uInt8Number }+ # made design decision to not change current format of CIccTagXmlColorantOrder
+                                   # This is because CIccTagXmlColorantOrder::ParseXml uses CIccUInt8Array::ParseArray
+                                   # not safe to change CIccUInt8Array::ParseArray because there are a lot of functions which uses it                                   
+    }    
+}
+
+colorantTableType = element colorantTableType {
+    # element TagSignature { 'clrt' | 'clot' }+,
+    TagSignature+,
+    element ColorantTable { 
+      # attribute CountOfColorants { uInt32Number }?,
+        element Colorant {
+            attribute Name { text },
+            attribute Channel1 { xsd:float },
+            attribute Channel2 { xsd:float },
+            attribute Channel3 { xsd:float }
+        }+
+     }
+}
+
+curveType = element curveType { Curve }
+
+# how to restrict so that the element should not be empty?
+dataType = element dataType {
+    # element TagSignature { Char4 },
+    TagSignature+,
+    element Data { 
+        attribute Flag { 'ASCII' | 'binary' },        
+        xsd:string }
+}
+
+dateTimeType = element dateTimeType {
+    # element TagSignature { 'calt' },
+    TagSignature+,
+    element DateTime { dateTimeNumber }
+}
+
+dictType = element dictType {
+    # element TagSignature { 'dict' },
+    TagSignature+,
+    element DictEntry { 
+		attribute Name { text },
+		attribute Value { text }?,
+		element LocalizedName {
+			attribute LanguageCountry { Char4 | '' },
+			text
+		}+,
+		element LocalizedValue {
+			attribute LanguageCountry { Char4 | '' },
+			text
+		}+
+	}+
+}
+
+lut8Type = element lut8Type { Lut8or16Type }
+
+lut16Type = element lut16Type { Lut8or16Type }
+
+lutAToBType = element lutAtoBType {         
+    # element TagSignature { 'A2B0' | 'A2B1' |  'A2B2' }+,
+    TagSignature+,
+    element Channels {
+        attribute InputChannels { uInt8Number },
+        attribute OutputChannels { uInt8Number },
+        empty        
+    },  
+    ( 
+       # BCurve only
+      element BCurve { CurveOrParametricChoice } |
+      # MCurve - Matrix - BCurve 
+      ( 
+        element MCurves { CurveOrParametricChoice },
+        element Matrix { A2BMatrix },
+        element BCurves { CurveOrParametricChoice }
+      ) |
+      # ACurve - CLUT - BCurve
+      (
+          element ACurves { CurveOrParametricChoice },
+          element CLUT { A2BClutTable },
+          element BCurves { CurveOrParametricChoice }
+      ) |
+      # ACurve - CLUT - MCurve - Matrix - BCurve
+      ( 
+          element ACurves { CurveOrParametricChoice },
+          element CLUT { A2BClutTable },
+          element MCurves { CurveOrParametricChoice },
+          element Matrix { A2BMatrix },
+          element BCurves { CurveOrParametricChoice }
+      )
+    )
+}
+
+lutBToAType = element lutBtoAType {   
+    # element TagSignature { 'B2A0' | 'B2A1' |  'B2A2' }+,
+    TagSignature+,
+    element Channels {
+        attribute InputChannels { uInt8Number },
+        attribute OutputChannels { uInt8Number },
+        empty        
+    },  
+    ( 
+      # BCurve only
+      element BCurve { CurveOrParametricChoice } |
+      # BCurve - Matrix - MCurve
+      (
+          element BCurves { CurveOrParametricChoice },
+          element Matrix { A2BMatrix },
+          element MCurves { CurveOrParametricChoice }
+      ) |
+      # BCurve - CLUT - ACurve
+      (
+         element BCurves { CurveOrParametricChoice },
+         element CLUT { A2BClutTable },
+         element ACurves { CurveOrParametricChoice }      
+      ) |
+      # BCurve - Matrix - MCurve -  CLUT - ACurve
+      (
+         element BCurves { CurveOrParametricChoice },
+         element Matrix { A2BMatrix },
+         element MCurves { CurveOrParametricChoice },         
+         element CLUT { A2BClutTable },
+         element ACurves { CurveOrParametricChoice }
+      )     
+    )
+}
+
+measurementType = element measurementType {
+    # element TagSignature { 'meas' },
+    TagSignature+,
+    element StandardObserver { 'Unknown Observer' | 'CIE 1931 standard colorimetric observer' | 'CIE 1964 standard colorimetric observer' },
+    element MeasurementBacking { XYZNumber },
+    element Geometry { 'Geometry Unknown' | 'Geometry 0-45 or 45-0' | 'Geometry 0-d or d-0' | 'Max Geometry'},
+    element Flare { 'Flare 0' | 'Flare 100' | 'Max Flare' },
+    element StandardIlluminant { Illuminant }    
+}
+
+multiLocalizedUnicodeType = element multiLocalizedUnicodeType {
+    # element TagSignature { 'cprt' | 'dmnd' | 'dmdd' | 'desc' | 'vued' }+,
+    TagSignature+,
+    # element NumberOfRecords { uInt32Number }?,
+    element LocalizedText {
+        attribute LanguageCountry { Char4 | '' },
+        TextOrFile
+    }+
+}
+
+multiProcessElementsType = element multiProcessElementsType {
+    TagSignature+,
+    MultiProcessElements+,
+}
+
+# not sure if this is the correct way to represent this type
+# 'name' is an attribute and 'deviceCoords' is the main content 
+namedColor2Type = element namedColor2Type {
+    # element TagSignature { 'ncl2' },
+    TagSignature+,
+    element NamedColors {
+        attribute VendorFlag { uInt32Number }, # is this correct datatype?
+        attribute CountOfDeviceCoords { uInt32Number },
+        attribute DeviceEncoding { "int16" | "int8" | "float" },
+        attribute Prefix { text },
+        attribute Suffix { text },    
+        element NamedColor {
+            (
+                (attribute Name { text },    
+                 attribute X { xsd:float { minInclusive = "0.0" } },
+                 attribute Y { xsd:float },
+                 attribute Z { xsd:float }           
+                ) |
+                (attribute Name { text },    
+                 attribute L { xsd:float { minInclusive = "0.0" } },
+                 attribute a { xsd:float },
+                 attribute b { xsd:float }           
+                )
+            ),
+            text
+        }+
+    }
+}
+
+parametricCurveType = element parametricCurveType { 
+    # element Curve{ 
+       # DataFormat?,
+        TagSignature+,
+        element ParametricCurve    {
+            attribute  FunctionType { '0' | '1' | '2' | '3' | '4' }, #what is better way to represent this?
+            list { (xsd:float)+ }
+        }
+   # }
+}
+
+profileSequenceDescType = element profileSequenceDescType {
+    # element TagSignature { 'pseq' },
+    TagSignature+,
+    element ProfileSequence {
+        # attribute CountOfDescStructs { uInt32Number }?,
+        element ProfileDesc { 
+            element DeviceManufacturerSignature { Char4 },
+            element DeviceModelSignature { Char4 },
+            element DeviceAttributes { DevAttr },
+            element Technology { TechnologySignatures }?,            
+            (
+                # version 2 profiles have textDescriptionType
+                ( 
+                    element DeviceManufacturer {textDescriptionType}?,
+                    element DeviceModel {textDescriptionType}?
+                ) |            
+                # version 4 profiles have multiLocalizedUnicodeType
+               ( 
+                    element DeviceManufacturer {multiLocalizedUnicodeType}?,
+                    element DeviceModel {multiLocalizedUnicodeType}?
+               )
+            )
+        }+
+    }
+}
+
+responseCurveSet16Type = element responseCurveSet16Type{
+    # element TagSignature { 'resp' },
+    TagSignature+,
+    element CountOfChannels { xsd:unsignedShort },
+  #  element CountOfMeasTypes { xsd:unsignedShort },
+    element ResponseCurve { ResponseCurve}+
+}
+
+s15Fixed16ArrayType = element s15Fixed16ArrayType{
+    # element TagSignature { 'chad' },
+    NumericArrayType
+}
+
+signatureType = element signatureType{
+    # element TagSignature { 'tech' },
+    TagSignature+,
+    element Signature { Char4 }
+}
+
+textDescriptionType = element textDescriptionType{
+    # element TagSignature { 'dmnd' | 'dmdd' | 'desc' | 'scrd' | 'vued' },
+    TagSignature+,    
+    (
+       element ASCII { 
+       # attribute Length { uInt32Number }?,         
+        TextOrFile
+        },
+
+        element Unicode {
+            attribute LanguageCode { Hex4Byte }?,
+            # attribute Length { uInt32Number }?,  
+            text
+        }?,
+        element MacScript {
+             attribute ScriptCode { Hex2Byte }?,
+             text
+        }?
+    )
+    
+}
+
+textType = element textType{
+    # element TagSignature { 'targ' | 'cprt' | Char4 },
+    TagSignature+,
+    ( 
+        element TextData { xsd:string } |
+        element ASCII { TextOrFile } 
+    )
+}
+
+u16Fixed16ArrayType = element u16Fixed16ArrayType { NumericArrayType }
+
+uInt16ArrayType = element uInt16ArrayType { NumericArrayType }
+
+uInt32ArrayType = element uInt32ArrayType { NumericArrayType }
+
+uInt64ArrayType = element uInt64ArrayType { NumericArrayType }
+
+uInt8ArrayType = element uInt8ArrayType { NumericArrayType }
+
+viewingConditionsType = element viewingConditionsType{
+    # element TagSignature { 'view' },
+    TagSignature+,
+    element IlluminantXYZ { XYZNumber },
+    element SurroundXYZ { XYZNumber },
+    element IllumType { Illuminant }
+}
+
+xyzType = element XYZType {
+    # element TagSignature { 'bXYZ' | 'gXYZ' | 'lumi' | 'bkpt' | 'wtpt' | 'rXYZ'},
+    TagSignature+,
+    element XYZNumber{ XYZNumber }*
+}
+
+# unknown tags
+unknownData = element PrivateType {
+      attribute type { text },
+      TagSignature+,
+      element UnknownData { text }        
+}
+
+
+# Special Data Types
+TagSignature = element TagSignature { Char4 | Hex8Byte }
+
+Curve = (
+    # element TagSignature { 'bTRC' | 'rTRC' | 'gTRC' | 'kTRC' }+
+    TagSignature+,
+    # element CountOfEntries { uInt32Number }?,
+    element Curve {
+        
+        Table 
+    }
+)
+# Contents of a curve is a table
+Table = (     
+     # table can contain a list of float.. 
+    (   #DataFormat?,
+       list { (xsd:float)+ } 
+    ) |
+     # OR reference to a text file..
+    ( attribute File { xsd:string }, 
+      attribute Format { 'text' },
+	  attribute FileEncoding { 'int8' | 'int16' | 'float'}?,
+      empty
+    ) |
+    # OR reference to a binary file
+    ( attribute File { xsd:string },
+      attribute Format { 'binary' },
+      attribute Endian { 'big' | 'little' },
+      empty
+    ) |
+    empty
+)
+# Contents of a text tag can be text or file
+TextOrFile = ( text | 
+   ( attribute File  { xsd:string }, empty )
+)
+
+EnumProfileClass =  ( 'scnr' | 'mntr' | 'prtr' | 'link' | 'spac' | 'abst' | 'nmcl' ) 
+EnumColourSpace = ('XYZ ' | 'Lab ' | 'Luv ' | 'YCbr' | 'Yxy ' | 'RGB ' | 'GRAY' |
+            'HSV ' | 'HLS ' | 'CMYK' | 'CMY ' | '2CLR' | '3CLR' | '4CLR' | '5CLR' )
+EnumPrimaryPlatform = ( 'NULL' | 'APPL' | 'MSFT' | 'SGI ' | 'SUNW' )
+DevAttr = (
+        attribute ReflectiveOrTransparency { 'reflective' | 'transparency' },
+        attribute GlossyOrMatte { 'glossy' | 'matte' },
+        attribute MediaPolarity { 'positive' | 'negative' },
+        attribute MediaColour { 'colour' | 'blackAndwhite' },
+        attribute VendorSpecific {  Hex8Byte }?
+)
+                                
+Lut8or16Type = (
+    TagSignature+,
+    element Channels {
+        attribute InputChannels { uInt8Number },
+        attribute OutputChannels { uInt8Number },
+        empty        
+    },   
+    element Matrix { Matrix }?,
+    (
+        element ACurves { 
+            element Curve { Table }+
+        } | 
+        element BCurves { 
+            element Curve { Table }+
+        } | 
+        element MCurves { 
+            element Curve { Table }+
+        } 
+    ),
+    element CLUT { ClutTable }, 
+    (
+         element ACurves { 
+            element Curve { Table }+
+        } | 
+        element BCurves { 
+            element Curve { Table }+
+        } | 
+        element MCurves { 
+            element Curve { Table }+
+        } 
+    )
+)
+    
+ClutTable = (
+    ( attribute GridGranularity { xsd:byte } | element GridPoints {xsd:string} ),
+    element TableData { Table }
+)
+
+
+Matrix = (
+    attribute e1 { xsd:float },
+    attribute e2 { xsd:float },
+    attribute e3 { xsd:float },
+    attribute e4 { xsd:float },
+    attribute e5 { xsd:float },
+    attribute e6 { xsd:float },
+    attribute e7 { xsd:float },
+    attribute e8 { xsd:float },
+    attribute e9 { xsd:float }
+)
+
+A2BClutTable = (
+    attribute Precision { '01h' | '02h' }?,
+    ClutTable
+)
+
+A2BMatrix = (
+    attribute e1 { xsd:float },
+    attribute e2 { xsd:float },
+    attribute e3 { xsd:float },
+    attribute e4 { xsd:float },
+    attribute e5 { xsd:float },
+    attribute e6 { xsd:float },
+    attribute e7 { xsd:float },
+    attribute e8 { xsd:float },
+    attribute e9 { xsd:float },
+    attribute e10 { xsd:float },
+    attribute e11 { xsd:float },
+    attribute e12 { xsd:float }
+)
+
+CurveOrParametricChoice = (  
+    element Curve { Table }+ | 
+    element ParametricCurve { 
+        DataFormat?,
+        attribute FunctionType { '0' | '1' | '2' | '3' | '4' },
+        #attribute CountOfEntries { uInt32Number }?,
+        list { (xsd:float)+ }
+    }+ 
+)
+
+MultiProcessElements = element MultiProcessElements {
+	attribute InputChannels { uInt16Number },
+	attribute OutputChannels { uInt16Number },
+	CurveSetElement *&  
+	MatrixElement *&    
+	CLutElement *&
+	element BAcsElement { AcsElement } *&
+	element EAcsElement { AcsElement } *&
+	UnknownElement *
+}
+
+CurveSetElement = element CurveSetElement {
+	attribute InputChannels { uInt16Number },
+	attribute OutputChannels { uInt16Number },
+	attribute Reserverd { uInt32Number }?,
+	SegmentedCurve+
+}
+
+SegmentedCurve = element SegmentedCurve {
+    (SingleSegment | MultiSegment)
+}
+
+SingleSegment = element FormulaSegment {
+	attribute Start { ('-infinity') },
+	attribute End { ('+infinity') },
+	attribute FuncitonType { uInt16Number},
+	attribute Reserved { uInt32Number }?,
+	attribute Reserved2 { uInt16Number }?,
+	list { (xsd:float)+ }
+}
+
+MultiSegment = {
+	FormulaStartSegment,
+	(FormulaSegment | SampledSegment)*,
+	FormulaEndSegment
+}
+
+FormulaStartSegment = element FormulaSegment {
+	attribute Start { ('-infinity') },
+	attribute End { (xsd:float) },
+	attribute FuncitonType { uInt16Number},
+	attribute Reserved { uInt32Number }?,
+	attribute Reserved2 { uInt16Number }?,
+	list { (xsd:float)+ }
+}
+
+FormulaEndSegment = element FormulaSegment {
+	attribute Start { (xsd:float) },
+	attribute End { ('+infinity') },
+	attribute FuncitonType { uInt16Number},
+	attribute Reserved { uInt32Number }?,
+	attribute Reserved2 { uInt16Number }?,
+	list { (xsd:float)+ }
+}
+
+FormulaSegment = element FormulaSegment {
+	attribute Start { (xsd:float) },
+	attribute End { (xsd:float) },
+	attribute FuncitonType { uInt16Number},
+	attribute Reserved { uInt32Number }?,
+	attribute Reserved2 { uInt16Number }?,
+	list { (xsd:float)+ }
+}
+
+SampledSegment = element SampledSegment {
+	attribute Start { (xsd:float) },
+	attribute End { (xsd:float) },
+	list { (xsd:float)+ }
+}
+
+ACSElement = {
+	attribute InputChannels { uInt16Number },
+	attribute OutputChannels { uint16Number },
+	attribute Reserved { uInt32Number }?,
+	attribute Signature { Char4 | Hex8Byte },
+	text
+}
+
+MatrixElement = element MatrixElement {
+	attribute InputChannels { uInt8Number},
+	attribute OutputChannels { uInt8Number },
+	attribute Reserved { uInt32Number }?,
+	element MatrixData {
+		list { (xsd:float)+ }
+	}?,
+	element ConstantData  {
+		list { (xsd:float)+ }
+	}?
+}
+
+CLutElement = element CLutElement {
+    attribute InputChannels { uInt8Number},
+	attribute OutputChannels { uInt8Number },
+	attribute Reserved { uInt32Number }?,
+    ( attribute GridGranularity { xsd:byte } | element GridPoints {xsd:string} ),
+    element TableData { Table }
+}
+
+UnknownElement = element UnknownElement {
+    attribute InputChannels { uInt8Number},
+	attribute OutputChannels { uInt8Number },
+	attribute Reserved { uInt32Number }?,
+    text?
+}
+
+TechnologySignatures = ('fscn' | 'dcam' | 'rscn' | 'ijet' | 'twax' | 'epho' | 'esta' | 'dsub' | 'rpho' | 'fprn' | 'vidm' |
+            'vidc' | 'pjtv' | 'CRT' | 'PMD' | 'AMD' | 'KPCD' | 'imgs' | 'grav' | 'offs' | 'silk' | 'flex')
+            
+Illuminant = ('Illuminant Unknown' | 'Illuminant D50' | 'Illuminant D65' | 'Illuminant D93' | 'Illuminant F2' | 
+            'Illuminant D55' | 'Illuminant A' | 'Illuminant EquiPowerE' | 'Illuminant F8')
+
+ResponseCurve = (
+    attribute MeasUnitSignature { 'Status A' | 'Status E' | 'Status I' | 'Status T' | 'Status M' | 
+        'DIN with no polarizing filter' | 'DIN with polarizing filter' | 'Narrow band DIN with no polarizing filter' | 'Narrow band DIN with polarizing filter' },
+    element ChannelResponses {
+      #  element NumberOfMeas { uInt32Number },
+        XYZNumber, 
+        element Measurement { 
+             attribute DeviceCode { xsd:float },
+             attribute MeasValue { xsd:float },
+             attribute Reserved { uInt16Number }?
+        }+
+    }+
+)
+
+DataFormat = attribute DataFormat { 'dec' | 'hex' | 'float' }
+
+NumericArrayType = (
+    TagSignature+,
+    element Array {  list { (xsd:float)+ } }
+)
+
+# Datatype patterns
+Char4 = xsd:string { length = "4" }
+Version = xsd:string { pattern = "\d\.\d\d" }
+Hex2Byte = xsd:hexBinary { length = "2" }
+Hex4Byte = xsd:hexBinary { length = "4" }
+Hex8Byte = xsd:hexBinary { length = "8" }
+Hex16Byte = xsd:hexBinary { length = "16" }
+
+# Basic Datatypes ( Section 4.1 of ICC Profile Specs)
+dateTimeNumber =  xsd:dateTime
+response16Number = (
+    element DeviceCode { uInt16Number },
+    # element Reserved { uInt16Number },
+    element MeasValue { s15Fixed16Number }
+)
+s15Fixed16Number = xsd:long
+u16Fixed16Number = xsd:unsignedLong
+u1Fixed15Number = xsd:unsignedShort
+u8Fixed8Number = xsd:unsignedShort
+uInt16Number = xsd:unsignedShort
+uInt32Number = xsd:unsignedLong
+uInt64Number = xsd:unsignedInt
+uInt8Number = xsd:byte
+XYZNumber = ( attribute X { xsd:float { minInclusive = "0.0" }}, 
+                                attribute Y { xsd:float },
+                                attribute Z { xsd:float }  )
+
